@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+<head>
+
+
+  <title>Web_voting</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="{% static "css/nav.css" %}">
+<link rel="stylesheet" type="text/css" href="{% static "css/indexview1.css" %}">
+<script src="{% static "js/view.js" %}"></script>
+  <body>
+    <nav>
+  <div id="page-head" class="container-fluid">
+      <div>
+        <ul class="navbar">
+           {% if user.is_authenticated %}
+          <li><a  href="#" class="fas fa-home fa-lg"></a></li>
+            <li><a href="http://127.0.0.1:8000/"><i class="fas fa-edit"></i> Home</a></li>
+          <li><a href="#"><i class="fas fa-star"></i> About Us <i class="fas fa-caret-down"></i></a>
+
+            <ul class="nestlist">
+              <li><a href="http://127.0.0.1:8000/About"><i class="fas fa-globe-asia"></i> Mission</a></li>
+              <li><a href="#"><i class="fas fa-users"></i> Our Team <i class="fas fa-caret-right"></i></a>
+                <ul class="nestlist inner">
+                  <li><a href="#"><i class="fas fa-male"></i> T Kousic Reddy</a></li>
+                  <li><a href="#"><i class="fas fa-female"></i> Kranthidhar</a></li>
+                  <li><a href="#"><i class="fas fa-male"></i>Chandrakala <i class="fas fa-caret-right"></i></a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+            </li>
+          <li><a href="{% url 'election:list' %}"><i class="fas fa-bullhorn"></i>Vote</a></li>
+          <li><a href="#"><i class="fas fa-phone fa-flip-horizontal"></i> Contacts</a></li>
+          <li><a href="{% url 'accounts:logout' %}"><i class="fas fa-briefcase"></i>LogOut</a></li>
+          {% else %}
+          <li><a  href="#" class="fas fa-home fa-lg"></a></li>
+            <li><a href="http://127.0.0.1:8000/"><i class="fas fa-edit"></i>Home</a></li>
+          <li><a href="#"><i class="fas fa-star"></i> About Us <i class="fas fa-caret-down"></i></a>
+
+            <ul class="nestlist">
+              <li><a href="http://127.0.0.1:8000/About"><i class="fas fa-globe-asia"></i> Mission</a></li>
+              <li><a href="#"><i class="fas fa-users"></i> Our Team <i class="fas fa-caret-right"></i></a>
+                <ul class="nestlist inner">
+                  <li><a href="#"><i class="fas fa-male"></i> T Kousic Reddy</a></li>
+                  <li><a href="#"><i class="fas fa-female"></i> Kranthidhar</a></li>
+                  <li><a href="#"><i class="fas fa-male"></i>Chandrakala <i class="fas fa-caret-right"></i></a></li>
+                </ul>
+                  </li>
+                </ul>
+            </li>
+            <li><a href="http://127.0.0.1:8000/admin/login/?next=/admin/"><i class="fas fa-edit"></i> Admin</a></li>
+            <li><a href="#"><i class="fas fa-phone fa-flip-horizontal"></i> Contacts</a></li>
+            <li><a href="{% url 'accounts:login' %}"><i class="fas fa-briefcase"></i>LogIn</a></li>
+            <li><a href="{% url 'accounts:signup' %}"><i class="fas fa-edit"></i>SignUp</a></li>
+
+           {% endif %}
+        </ul>
+
+      </div>
+    </div>
+    </nav>
+
+<!---<footer class="section bg-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="">
+                        <h6 class="footer-heading text-uppercase text-white">Information</h6>
+                        <ul class="list-unstyled footer-link mt-4">
+                            <li><a href="">Pages</a></li>
+                            <li><a href="">Our Team</a></li>
+                            <li><a href="">Feuchers</a></li>
+                            <li><a href="">Pricing</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-3">
+                    <div class="">
+                        <h6 class="footer-heading text-uppercase text-white">Ressources</h6>
+                        <ul class="list-unstyled footer-link mt-4">
+                            <li><a href="">Monitoring Grader </a></li>
+                            <li><a href="">Video Tutorial</a></li>
+                            <li><a href="">Term &amp; Service</a></li>
+                            <li><a href="">Zeeko API</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-2">
+                    <div class="">
+                        <h6 class="footer-heading text-uppercase text-white">Help</h6>
+                        <ul class="list-unstyled footer-link mt-4">
+                            <li><a href="">Sign Up </a></li>
+                            <li><a href="">Login</a></li>
+                            <li><a href="">Terms of Services</a></li>
+                            <li><a href="">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="">
+                        <h6 class="footer-heading text-uppercase text-white">Contact Us</h6>
+                        <p class="contact-info mt-4">Contact us if need help withanything</p>
+                        <p class="contact-info">+01 123-456-7890</p>
+                        <div class="mt-5">
+                            <ul class="list-inline">
+                                <li class="list-inline-item"><a href="#"><i class="fab facebook footer-social-icon fa-facebook-f"></i></i></a></li>
+                                <li class="list-inline-item"><a href="#"><i class="fab twitter footer-social-icon fa-twitter"></i></i></a></li>
+                                <li class="list-inline-item"><a href="#"><i class="fab google footer-social-icon fa-google"></i></i></a></li>
+                                <li class="list-inline-item"><a href="#"><i class="fab apple footer-social-icon fa-apple"></i></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <p class="footer-alt mb-0 f-14">2019 © Anup, All Rights Reserved</p>
+        </div>
+    </footer>--->
+
+  </body>
+  </html>
+  {% block content %}
+
+  {% endblock %}

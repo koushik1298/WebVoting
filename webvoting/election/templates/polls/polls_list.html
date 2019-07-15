@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+<head>
+
+
+  <title>Web_voting</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="{% static "css/nav.css" %}">
+</head>
+  <body>
+    <div class="container">
+    <nav>
+  <div id="page-head" class="container-fluid">
+      <div>
+        <ul class="navbar">
+          <li><a  href="#" class="fas fa-home fa-lg"></a></li>
+            <li><a href="#"><i class="fas fa-edit"></i> Home</a></li>
+          <li><a href="#"><i class="fas fa-star"></i> About Us <i class="fas fa-caret-down"></i></a>
+
+            <ul class="nestlist">
+              <li><a href="#"><i class="fas fa-globe-asia"></i> Mission</a></li>
+              <li><a href="#"><i class="fas fa-users"></i> Our Team <i class="fas fa-caret-right"></i></a>
+                <ul class="nestlist inner">
+                  <li><a href="#"><i class="fas fa-male"></i> T Kousic Reddy</a></li>
+                  <li><a href="#"><i class="fas fa-female"></i> Kranthidhar</a></li>
+                  <li><a href="#"><i class="fas fa-male"></i>Chandrakala <i class="fas fa-caret-right"></i></a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+            </li>
+          <li><a href="{% url 'election:list' %}"><i class="fas fa-bullhorn"></i>Vote</a></li>
+          <li><a href="#"><i class="fas fa-phone fa-flip-horizontal"></i> Contacts</a></li>
+          <li><a href="{% url 'accounts:logout' %}"><i class="fas fa-briefcase"></i>LogOut</a></li>
+          </ul>
+          </div>
+  <h1 class='text-center'>Welcome to Poll List!</h1>
+  <div class="row">
+    <div class="col-sm-8 offset-sm-2">
+
+      {% if messages %}
+          {% for message in messages %}
+          <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+            {{message}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+               <span aria-hidden="true">&times;</span>
+             </button>
+          </div>
+          {% endfor %}
+      {% endif %}
+      {% if request.user.is_superuser %}
+        <a href="{% url 'polls:add' %}" class="btn btn-primary" style="margin-bottom: 5px">Add <i class="fas fa-plus"></i> </a>
+
+    <a
+            href="?text=True"
+            class="btn btn-{% if 'text' in request.GET %}warning{% else %}primary{% endif %}"
+            style="margin-bottom: 5px">Text
+        </a>
+           <a
+            href="?pub_date=True"
+            class="btn btn-{% if 'pub_date' in request.GET %}warning{% else %}primary{% endif %}"
+            style="margin-bottom: 5px">Pub_date
+        </a>
+        <a
+            href="?num_votes=True"
+            class="btn btn-{% if 'num_votes' in request.GET %}warning{% else %}primary{% endif %}"
+            style="margin-bottom: 5px">Num_votes
+      </a>
+      {% else %}
+      <a
+              href="?text=True"
+              class="btn btn-{% if 'text' in request.GET %}warning{% else %}primary{% endif %}"
+              style="margin-bottom: 5px">Text
+          </a>
+             <a
+              href="?pub_date=True"
+              class="btn btn-{% if 'pub_date' in request.GET %}warning{% else %}primary{% endif %}"
+              style="margin-bottom: 5px">Pub_date
+          </a>
+          <a
+              href="?num_votes=True"
+              class="btn btn-{% if 'num_votes' in request.GET %}warning{% else %}primary{% endif %}"
+              style="margin-bottom: 5px">Num_votes
+        </a>
+        {% endif %}
+
+
+      <form class="form-inline my-2 my-lg-1">
+        <input
+            class="form-control mr-sm-2"
+            type="search"
+            placeholder="Search"
+            aria-label="Search"
+            name='search'
+            value="{{search_term}}">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      </form>
+
+      <ul class="list-group">
+        {% for poll in polls %}
+        <li class="list-group-item">
+          <a href="{% url 'polls:detail' poll.id %}">{{ poll }}</a>
+          {% if request.user == poll.owner %}
+            <a href="{% url 'polls:edit_poll' poll.id %}" class='float-right'><i class="fas fa-pencil-alt"></i></a>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+
+      <div class="pagination">
+          <span class="step-links">
+              {% if polls.has_previous %}
+                  <a href="?page=1&{{params}}">&laquo; first</a>
+                  <a href="?page={{ polls.previous_page_number }}&{{params}}">previous</a>
+              {% endif %}
+
+              <span class="current">
+                  Page {{ polls.number }} of {{ polls.paginator.num_pages }}.
+              </span>
+
+              {% if polls.has_next %}
+                  <a href="?page={{ polls.next_page_number }}&{{params}}">next</a>
+                  <a href="?page={{ polls.paginator.num_pages }}&{{params}}">last &raquo;</a>
+              {% endif %}
+          </span>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+</body>
+</html>
