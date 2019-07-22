@@ -1,0 +1,134 @@
+#keras.applications.mobilenet_v2.MobileNetV2(input_shape=None, alpha=1.0, depth_multiplier=1, include_top=True, weights='imagenet', input_tensor=None, pooling=None, classes=1000)
+#keras.applications.resnet50.ResNet50(include_top=True, weights='imagenet', input_tensor=None, input_shape=None, pooling=None, classes=1000)
+#from keras.applications.resnet50 import ResNet50
+import tensorflow as tf
+from tensorflow.keras.applications.inception_v3 import InceptionV3
+from tensorflow.keras.preprocessing import image
+from keras.optimizers import SGD,rmsprop
+#from keras.applications.resnet50 import preprocess_input, decode_predictions
+from tensorflow.keras.applications.inception_v3 import preprocess_input, decode_predictions
+from tensorflow.keras.models import Model,load_model
+from tensorflow.keras.layers import Dense,GlobalAveragePooling2D,Input
+from keras.preprocessing.image import ImageDataGenerator
+import keras
+import numpy as np
+import math, os, sys
+
+#import coremltool
+
+# constants
+image_size = (299, 299)
+#ontent/gdrive/My Drive/Rice Diseases
+train_data_dir = r'train'
+validation_data_dir = r'valid'
+#Test_data_dir = r'test'
+#test_batches=ImageDataGenerator.flow_from_directory(train_data_dir,target_size=(299,299),classes=['Yellow stem borer','SHBL','RTD','Marselia quadrifoliata','Leaf folder'])
+nb_epoch = 25
+#batch_size = 16
+batch_size = 20
+num_classes = 32
+
+train_generator=0 
+input_tensor = Input(shape=(299, 299, 3))  # this assumes K.image_data_format() == 'channels_last'
+# create the base pre-trained model
+base_model = InceptionV3(input_tensor=input_tensor,weights='imagenet',include_top=False)
+for layer in base_model.layers:
+    layer.trainable=False
+x = base_model.output
+x = GlobalAveragePooling2D(data_format='channels_last')(x)
+x = Dense(num_classes, activation='softmax')(x)
+base_model= Model(base_model.input, x)
+opt = tf.keras.optimizers.SGD(lr=0.0001, momentum=0.9)
+base_model.compile(loss=keras.losses.categorical_crossentropy,
+                  optimizer=opt,
+                  metrics=['accuracy'])
+num_train_samples = sum([len(files) for r, d, files in os.walk(train_data_dir)])
+num_valid_samples = sum([len(files) for r, d, files in os.walk(validation_data_dir)])
+print("num_train_samples", num_train_samples)
+print("num_valid_samples", num_valid_samples)
+num_train_steps = math.floor(num_train_samples/batch_size)
+num_valid_steps = math.floor(num_valid_samples/batch_size)
+
+train_datagen = ImageDataGenerator(  
+  rotation_range=90,      
+  horizontal_flip=True,    
+  vertical_flip=True,
+  zoom_range=0.4)
+train_datagen=ImageDataGenerator(preprocessing_function=preprocess_input, rescale=1. / 255) #included in our dependencies
+
+test_datagen = ImageDataGenerator(rescale=1. / 255)
+
+train_generator = train_datagen.flow_from_directory(
+  train_data_dir,
+  target_size=image_size ,
+  batch_size=batch_size,
+  class_mode='categorical', shuffle=True
+)
+
+print("class", train_generator.class_indices)
+#for cls in train_generator.class_indices:
+ #   print("class", train_generator.class_indices)
+
+validation_generator = test_datagen.flow_from_directory(
+  validation_data_dir,
+  target_size=image_size ,
+  batch_size=batch_size,
+  class_mode='categorical', shuffle=True
+)
+
+print("start history model")
+history = base_model.fit_generator(
+  train_generator,
+  steps_per_epoch=num_train_steps,
+  epochs=nb_epoch,
+  validation_data=validation_generator,
+  validation_steps=num_valid_steps)
+
+print("preparation1 done")
+for layer in base_model.layers[:249]:
+   layer.trainable = False
+for layer in base_model.layers[249:]:
+   layer.trainable = True
+base_model.compile(optimizer='rmsprop',loss=keras.losses.categorical_crossentropy,metrics=['accuracy'])
+num_train_samples = sum([len(files) for r, d, files in os.walk(train_data_dir)])
+num_valid_samples = sum([len(files) for r, d, files in os.walk(validation_data_dir)])
+print("num_train_samples", num_train_samples)
+print("num_valid_samples", num_valid_samples)
+num_train_steps = math.floor(num_train_samples/batch_size)
+num_valid_steps = math.floor(num_valid_samples/batch_size)
+
+train_datagen = ImageDataGenerator(  
+  rotation_range=0,      
+  horizontal_flip=False,    
+  vertical_flip=False,
+  zoom_range=0)
+train_datagen=ImageDataGenerator(preprocessing_function=preprocess_input, rescale=1. / 255) #included in our dependencies
+
+test_datagen = ImageDataGenerator(rescale=1. / 255)
+
+train_generator = train_datagen.flow_from_directory(
+  train_data_dir,
+  target_size=image_size ,
+  batch_size=batch_size,
+  class_mode='categorical', shuffle=True
+)
+
+print("class", train_generator.class_indices)
+#for cls in train_generator.class_indices:
+ #   print("class", train_generator.class_indices)
+
+validation_generator = test_datagen.flow_from_directory(
+  validation_data_dir,
+  target_size=image_size ,
+  batch_size=batch_size,
+  class_mode='categorical', shuffle=True
+)
+
+print("start history model")
+history = base_model.fit_generator(
+  train_generator,
+  steps_per_epoch=num_train_steps,
+  epochs=nb_epoch,
+  validation_data=validation_generator,
+  validation_steps=num_valid_steps)
+print("preparation final done")
