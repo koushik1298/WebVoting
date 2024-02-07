@@ -1,0 +1,1 @@
+A web application has been developed to facilitate online voting and analyze voting data comprehensively. This platform offers a seamless experience for conducting electronic voting processes while providing robust analytical tools for in-depth data examination and interpretation.
